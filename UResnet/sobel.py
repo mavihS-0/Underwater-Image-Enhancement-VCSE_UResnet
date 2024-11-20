@@ -7,36 +7,22 @@ import torchvision
 from torchvision import datasets,models,transforms
 import time
 
-# class Edge_Detector(nn.Module):
-#     def __init__(self):
-#         super(Edge_Detector, self).__init__()
-#         # Using a Sobel filter for edge detection instead of a fixed kernel
-#         self.sobel_x = nn.Conv2d(3, 1, kernel_size=3, stride=1, padding=1, bias=False)
-#         self.sobel_y = nn.Conv2d(3, 1, kernel_size=3, stride=1, padding=1, bias=False)
-#         sobel_kernel_x = torch.tensor([[[[-1., 0., 1.], [-2., 0., 2.], [-1., 0., 1.]]]])
-#         sobel_kernel_y = torch.tensor([[[[-1., -2., -1.], [0., 0., 0.], [1., 2., 1.]]]])
-#         self.sobel_x.weight = nn.Parameter(sobel_kernel_x.repeat(3, 1, 1, 1), requires_grad=False)
-#         self.sobel_y.weight = nn.Parameter(sobel_kernel_y.repeat(3, 1, 1, 1), requires_grad=False)
-    
-#     def forward(self, x):
-#         x_gray = torch.mean(x, dim=1, keepdim=True)  # Convert RGB to grayscale
-#         edge_x = self.sobel_x(x_gray)
-#         edge_y = self.sobel_y(x_gray)
-#         edge_map = torch.sqrt(edge_x ** 2 + edge_y ** 2)
-#         return edge_map
-
 class Edge_Detector(nn.Module):
     def __init__(self):
-        super(Edge_Detector,self).__init__()
-        #self.kernel=torch.tensor([[[1.,1.,1.],[1.,-8.,1.],[1.,1.,1.]],[[1.,1.,1.],[1.,-8.,1.],[1.,1.,1.]],[[1.,1.,1.],[1.,-8.,1.],[1.,1.,1.]]])
-        self.conv1=nn.Conv2d(in_channels=3,out_channels=1,kernel_size=3,stride=1,padding=0,bias=False)
-        nn.init.constant_(self.conv1.weight,1)
-        nn.init.constant_(self.conv1.weight[0,0,1,1],-8)
-        nn.init.constant_(self.conv1.weight[0,1,1,1],-8)
-        nn.init.constant_(self.conv1.weight[0,2,1,1],-8)
-      
-    def forward(self,x1):
-        edge_map=self.conv1(x1)
+        super(Edge_Detector, self).__init__()
+        # Using a Sobel filter for edge detection instead of a fixed kernel
+        self.sobel_x = nn.Conv2d(3, 1, kernel_size=3, stride=1, padding=1, bias=False)
+        self.sobel_y = nn.Conv2d(3, 1, kernel_size=3, stride=1, padding=1, bias=False)
+        sobel_kernel_x = torch.tensor([[[[-1., 0., 1.], [-2., 0., 2.], [-1., 0., 1.]]]])
+        sobel_kernel_y = torch.tensor([[[[-1., -2., -1.], [0., 0., 0.], [1., 2., 1.]]]])
+        self.sobel_x.weight = nn.Parameter(sobel_kernel_x.repeat(3, 1, 1, 1), requires_grad=False)
+        self.sobel_y.weight = nn.Parameter(sobel_kernel_y.repeat(3, 1, 1, 1), requires_grad=False)
+    
+    def forward(self, x):
+        x_gray = torch.mean(x, dim=1, keepdim=True)  # Convert RGB to grayscale
+        edge_x = self.sobel_x(x_gray)
+        edge_y = self.sobel_y(x_gray)
+        edge_map = torch.sqrt(edge_x ** 2 + edge_y ** 2)
         return edge_map
 
 
@@ -50,9 +36,9 @@ class Res_Block(nn.Module):
         
         return torch.add(self.bn(self.conv(self.relu(self.bn(self.conv(x))))),x)
 
-class UResNet(nn.Module):
+class UResNet_Sob(nn.Module):
     def __init__(self):
-        super(UResNet,self).__init__()
+        super(UResNet_Sob,self).__init__()
         self.edge_detector=Edge_Detector()
         self.residual_layer=self.stack_layer(Res_Block,16)
         self.input=nn.Conv2d(in_channels=3,out_channels=64,kernel_size=3,stride=1,padding=1,bias=False)

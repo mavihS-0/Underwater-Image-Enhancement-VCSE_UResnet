@@ -9,13 +9,13 @@ from torchvision import transforms
 import time
 import os
 import copy
-from sobel import Edge_Detector,Res_Block,UResNet_Sob
+from original_model import Edge_Detector,Res_Block,UResNet
 import argparse
 from dataloader import TrainDataSet
 
 def train(config):
 	device = torch.device("cuda:" + str(config.cuda_id))
-	model = UResNet_Sob().to(device)
+	model = UResNet().to(device)
 	for param in model.edge_detector.parameters():
 	    param.requires_grad=False
 	edge_detector = Edge_Detector().to(device)
@@ -125,7 +125,7 @@ if __name__ == "__main__":
     parser.add_argument('--cuda_id', type=int, default=0,help="id of cuda device,default:0")
     parser.add_argument('--print_freq', type=int, default=1)    
     parser.add_argument('--snapshot_freq', type=int, default=50)
-    parser.add_argument('--snapshots_folder', type=str, default="./snapshots/ensemble_sobel/")
+    parser.add_argument('--snapshots_folder', type=str, default="./snapshots/ensemble_original/")
     # parser.add_argument('--sample_output_folder', type=str, default="samples/")
 
     config = parser.parse_args()

@@ -12,7 +12,7 @@ import copy
 from model import Edge_Detector,Res_Block,UResNet_P
 import argparse
 from dataloader import TrainDataSet,TestDataSet
-from model import UResNet_P
+from se_model import UResNet_SE
 
 
 
